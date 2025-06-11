@@ -332,7 +332,12 @@ function love.draw()
       local ing = ingredients[note.ingredient_idx]
       love.graphics.setColor(ingredient_colors[ing] or {1,1,1})
       love.graphics.circle("fill", note.x, note.y, 24)
-      love.graphics.setColor(colors.text)
+      -- Draw key label with high contrast (black for yellow, white otherwise)
+      if ing == "Cheese" then
+        love.graphics.setColor(0,0,0)
+      else
+        love.graphics.setColor(colors.text)
+      end
       love.graphics.print(string.upper(get_key_for_ingredient(note.ingredient_idx)), note.x-10, note.y-10)
     end
   end
