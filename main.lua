@@ -221,6 +221,11 @@ function love.keypressed(key)
     if best_note then
       best_note.hit = true
       best_note.active = false
+      -- Play sound if available
+      if sounds[piano_notes[note_index]] then
+        sounds[piano_notes[note_index]]:stop()
+        sounds[piano_notes[note_index]]:play()
+      end
       if not table_contains(added_ingredients, ingredients[note_index]) then
         table.insert(added_ingredients, ingredients[note_index])
         table.insert(floating_labels, {
