@@ -1,4 +1,4 @@
--- Valentine's Day Pizza Symphony Game (Vegetarian Edition)
+-- Valentine's Day Pizza Symphony Game (Vegetarian Edition with Background Music)
 -- Run in LÖVE framework (love2d.org)
 
 -- Game state
@@ -10,6 +10,7 @@ local message = "Happy Valentine's Day, my love! You're my perfect veggie pizza!
 local show_message = false
 local hearts = {} -- For heart animations
 local sounds = {}
+local background_music = nil
 
 -- Colors for light/dark themes
 local colors = {
@@ -23,7 +24,13 @@ function love.load()
   love.window.setTitle("Veggie Pizza Symphony for My Pianist")
   love.window.setMode(800, 600)
 
-  -- Load sounds (optional, comment out if no sound files)
+  -- Load background music
+  background_music = love.audio.newSource("piano_pizza.wav", "stream")
+  background_music:setLooping(true)
+  background_music:setVolume(0.3) -- Lower volume to avoid overpowering note sounds
+  background_music:play()
+
+  -- Load piano note sounds (optional, comment out if no sound files)
   for _, note in ipairs(piano_notes) do
     sounds[note] = love.audio.newSource("piano-" .. note .. ".wav", "static")
   end
