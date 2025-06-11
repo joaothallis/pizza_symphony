@@ -163,6 +163,8 @@ function love.update(dt)
         if note.y > hit_zone_y + 40 and not note.hit then
           note.active = false
           combo = 0
+          -- Respawn missed note at the top to give another chance
+          table.insert(notes_to_spawn, note.ingredient_idx)
         end
       end
     end
