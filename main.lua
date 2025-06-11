@@ -311,7 +311,13 @@ function love.draw()
   love.graphics.setColor(colors.text)
   love.graphics.print("Time: " .. math.ceil(timer), 600, 50)
   love.graphics.print("Score: " .. score, 600, 80)
+  -- Move <3! to a more visible location
+  love.graphics.setColor(1, 0.4, 0.4)
+  love.graphics.setFont(love.graphics.newFont(32))
+  love.graphics.print("<3!", 600, 20)
+  love.graphics.setFont(love.graphics.newFont(12))
   -- Draw key-ingredient mapping
+  love.graphics.setColor(colors.text)
   love.graphics.print("Keys:", 600, 120)
   for idx, ingredient in ipairs(ingredients) do
     local key = string.upper(get_key_for_ingredient(idx))
@@ -359,8 +365,15 @@ function love.draw()
     love.graphics.print("Max Combo: " .. max_combo, 200, 40)
     love.graphics.setColor(colors.text)
     love.graphics.print("Pizza Complete! Score: " .. score, 200, 20)
-    love.graphics.print(message, 200, 50)
-    love.graphics.print("Press R to play again!", 200, 80)
+    -- Draw the message in multiple lines for clarity, and highlight the <3
+    local msg = "Happy Valentine's Day, my love!\nYou're my perfect veggie pizza! "
+    love.graphics.print(msg, 200, 50)
+    love.graphics.setColor(1, 0.4, 0.4)
+    love.graphics.setFont(love.graphics.newFont(32))
+    love.graphics.print("<3", 200, 90)
+    love.graphics.setFont(love.graphics.newFont(12))
+    love.graphics.setColor(colors.text)
+    love.graphics.print("Press R to play again!", 200, 130)
   elseif game_state == "lose" then
     love.graphics.setColor(1,0,0)
     love.graphics.print("Time's up! Try again!", 200, 50)
