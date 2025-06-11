@@ -5,7 +5,7 @@ import struct
 # Audio parameters
 sample_rate = 44100  # Hz
 duration = 0.5       # seconds
-amplitude = 0.5      # Volume (0.0 to 1.0)
+amplitude = 0.95     # Increased volume (near max, was 0.8)
 
 # Piano note frequencies (middle octave, C4 to F4)
 notes = {
@@ -16,12 +16,15 @@ notes = {
 }
 
 def generate_sine_wave(frequency, duration, sample_rate, amplitude):
-    """Generate a sine wave for a given frequency."""
+    """Generate a sine wave with a harmonic for a piano-like sound."""
     t = np.linspace(0, duration, int(sample_rate * duration), False)
-    wave = amplitude * np.sin(2 * np.pi * frequency * t)
+    # Base tone + second harmonic (1/3 amplitude) for richer sound
+    wave = amplitude * (np.sin(2 * np.pi * frequency * t) + 0.33 * np.sin(2 * np.pi * 2 * frequency * t))
     # Apply envelope to avoid clicks (fade in/out)
     envelope = np.exp(-4 * t / duration) * np.exp(-4 * (duration - t) / duration)
-    return (wave * envelope * 32767).astype(np.int16)
+    # Normalize to prevent clipping
+    audio = wave * envelope * 32767 / np.max(np.abs(wave * envelope))
+    return audio.astype(np.int16)
 
 def save_wav(filename, audio):
     """Save audio data to a WAV file."""

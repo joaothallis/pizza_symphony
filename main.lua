@@ -27,17 +27,13 @@ function love.load()
   -- Load background music
   background_music = love.audio.newSource("piano_pizza.wav", "stream")
   background_music:setLooping(true)
-  background_music:setVolume(0.3) -- Lower volume to avoid overpowering note sounds
+  background_music:setVolume(0.05) -- Further reduced volume for very subtle background
   background_music:play()
 
   -- Load piano note sounds (optional, comment out if no sound files)
   for _, note in ipairs(piano_notes) do
     sounds[note] = love.audio.newSource("piano-" .. note .. ".wav", "static")
-  end
-
-  -- Initialize hearts
-  for i = 1, 10 do
-    hearts[i] = {x = math.random(0, 800), y = math.random(0, 600), speed = math.random(50, 150)}
+    sounds[note]:setVolume(1.0) -- Max volume for piano notes
   end
 end
 
