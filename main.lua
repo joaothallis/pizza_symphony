@@ -250,19 +250,67 @@ end
 
 function love.mousepressed(x, y, button)
   if button ~= 1 or game_state ~= "playing" then return end
-  -- Check for active falling notes in the hit zone under the mouse
+  -- Check if click is on a key rectangle (virtual keyboard)
+  local key_x = {a = 200, s = 260, d = 320, f = 380}
+  local key_clicked = nil
+  for k, rect_x in pairs(key_x) do
+    if x >= rect_x and x <= rect_x + 50 and y >= 400 and y <= 500 then
+      key_clicked = k
+      break
+    end
+  end
+  if key_clicked then
+    -- Simulate keypress logic for this key
+    local note_index = key_map[key_clicked]
+    key_feedback[key_clicked] = 0.2
+    local best_note = nil
+    local best_dist = 9999
+    for _, note in ipairs(falling_notes) do
+      if note.active and not note.hit and note.ingredient_idx == note_index then
+        local dist = math.abs(note.y - hit_zone_y)
+        if dist < 40 and dist < best_dist then
+          best_note = note
+          best_dist = dist
+        end
+      end
+    end
+    if best_note then
+      best_note.hit = true
+      best_note.active = false
+      if sounds[piano_notes[note_index]] then
+        sounds[piano_notes[note_index]]:stop()
+        sounds[piano_notes[note_index]]:play()
+      end
+      if not table_contains(added_ingredients, ingredients[note_index]) then
+        table.insert(added_ingredients, ingredients[note_index])
+        table.insert(floating_labels, {
+          text = "+" .. ingredients[note_index],
+          x = ingredient_positions[note_index].x,
+          y = ingredient_positions[note_index].y,
+          alpha = 1
+        })
+        combo = combo + 1
+        combo_timer = 2
+        if combo > max_combo then max_combo = combo end
+        score = score + 10 + combo * 2
+      end
+    else
+      combo = 0
+      key_feedback[key_clicked] = 0.5
+    end
+    return
+  end
+  -- Otherwise, check for clicking on falling note circles (old logic)
   local hit_any = false
   for _, note in ipairs(falling_notes) do
     if note.active and not note.hit then
       local dist = math.sqrt((x - note.x)^2 + (y - note.y)^2)
       if dist <= 24 and math.abs(note.y - hit_zone_y) < 40 then
-        -- Simulate keypress for this note
         note.hit = true
         note.active = false
         local note_index = note.ingredient_idx
         local key = get_key_for_ingredient(note_index)
         if key then key_feedback[key] = 0.2 end
-        -- Play sound if available
         if sounds[piano_notes[note_index]] then
           sounds[piano_notes[note_index]]:stop()
           sounds[piano_notes[note_index]]:play()
@@ -281,7 +329,7 @@ function love.mousepressed(x, y, button)
           score = score + 10 + combo * 2
         end
         hit_any = true
-        break -- Only allow one note per click
+        break
       end
     end
   end
