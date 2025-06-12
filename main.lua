@@ -248,8 +248,50 @@ function love.keypressed(key)
   end
 end
 
+function love.mousepressed(x, y, button)
+  if button ~= 1 or game_state ~= "playing" then return end
+  -- Check for active falling notes in the hit zone under the mouse
+  local hit_any = false
+  for _, note in ipairs(falling_notes) do
+    if note.active and not note.hit then
+      local dist = math.sqrt((x - note.x)^2 + (y - note.y)^2)
+      if dist <= 24 and math.abs(note.y - hit_zone_y) < 40 then
+        -- Simulate keypress for this note
+        note.hit = true
+        note.active = false
+        local note_index = note.ingredient_idx
+        local key = get_key_for_ingredient(note_index)
+        if key then key_feedback[key] = 0.2 end
+        -- Play sound if available
+        if sounds[piano_notes[note_index]] then
+          sounds[piano_notes[note_index]]:stop()
+          sounds[piano_notes[note_index]]:play()
+        end
+        if not table_contains(added_ingredients, ingredients[note_index]) then
+          table.insert(added_ingredients, ingredients[note_index])
+          table.insert(floating_labels, {
+            text = "+" .. ingredients[note_index],
+            x = ingredient_positions[note_index].x,
+            y = ingredient_positions[note_index].y,
+            alpha = 1
+          })
+          combo = combo + 1
+          combo_timer = 2
+          if combo > max_combo then max_combo = combo end
+          score = score + 10 + combo * 2
+        end
+        hit_any = true
+        break -- Only allow one note per click
+      end
+    end
+  end
+  if not hit_any then
+    combo = 0
+  end
+end
+
 -- Helper to get key for ingredient idx
-local function get_key_for_ingredient(idx)
+function get_key_for_ingredient(idx)
   for k, v in pairs(key_map) do
     if v == idx then return k end
   end
