@@ -88,7 +88,7 @@ function love.load()
   -- Load background music
   background_music = love.audio.newSource("piano_pizza.wav", "stream")
   background_music:setLooping(true)
-  background_music:setVolume(0.05) -- Further reduced volume for very subtle background
+  background_music:setVolume(0.3) -- Increased volume for more audible background
   background_music:play()
 
   -- Load piano note sounds (optional, comment out if no sound files)
